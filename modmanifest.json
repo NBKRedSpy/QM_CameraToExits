@@ -1,0 +1,12 @@
+{
+  "UniqueModName": "NBKRedSpy_CameraToExits",
+  "Assemblies": [
+    "CameraToExits.dll"
+  ],
+  "Dependencies": [],
+  "SteamTags": [
+    "0.9.1",
+    "0.9",
+    "Quality of Life"
+  ]
+}
