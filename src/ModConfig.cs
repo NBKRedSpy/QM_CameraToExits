@@ -15,6 +15,12 @@ namespace CameraToExits
     {
 
         /// <summary>
+        /// The minimum amount of time that the user has to press the same key
+        /// to cycle between targets.
+        /// </summary>
+        public int CycleMilliseconds { get; set; } = 1000;
+
+        /// <summary>
         /// When pressed, moves to the elevator that goes down.
         /// </summary>
         public KeyCode MoveToDownElevatorKey { get; set; } = KeyCode.LeftBracket;

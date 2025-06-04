@@ -4,7 +4,7 @@
 
 Adds a hotkey to move the camera view to the current level's exits.  Helpful when the player is moving loot back to the shuttle from multiple floors.
 
-Press left bracket for move to the down elevator.  Press right bracked to move to the up elevator or shuttle.
+Press left bracket for move to the down elevator or the drop pod.  Press right bracket to move to the up elevator or shuttle.
 
 The camera will only move if the target has already been explored.
 
@@ -18,6 +18,7 @@ The configuration file will be created on the first game run and can be found at
 |--|--|--|
 |MoveToDownElevatorKey|Left Bracket|When pressed, moves to the elevator that goes down.|
 |MoveToUpElevatorKey|Right Bracket|When pressed, moves to the elevator that goes up or the shuttle.|
+|CycleMilliseconds|1000|he minimum amount of time that the user has to press the same key to cycle between targets.|
 
 ## Key List
 The list of valid keyboard keys can be found  at the bottom of https://docs.unity3d.com/ScriptReference/KeyCode.html
@@ -30,3 +31,9 @@ Thanks!
 
 # Source Code
 Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToExits
+
+# Change Log
+
+## 1.1.0 
+* Added drop pod to the list of items.  The user can press the "down key" again to cycle between the exist and the drop pod.  Intentionally includes if the area is not explored since it is shown on the minimap.
+
