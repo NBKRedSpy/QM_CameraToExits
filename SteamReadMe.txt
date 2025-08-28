@@ -11,6 +11,8 @@ The hotkeys can be configured.
 
 [h1]Configuration[/h1]
 
+This mod includes MCM configuration.  Some values can be edited in the Mods screen, while the rest will be display only. All options can be configured in the config file.
+
 The configuration file will be created on the first game run and can be found at [i]%AppData%\..\LocalLow\Magnum Scriptum Ltd\Quasimorph_ModConfigs\CameraToExits\config.json[/i].
 [table]
 [tr]
@@ -58,11 +60,21 @@ Use "None" to not bind the key.
 If you enjoy my mods and want to buy me a coffee, check out my [url=https://ko-fi.com/nbkredspy71915]Ko-Fi[/url] page.
 Thanks!
 
+[h1]Credits[/h1]
+[list]
+[*]Special thanks to Crynano for his excellent Mod Configuration Menu.
+[/list]
+
 [h1]Source Code[/h1]
 
 Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToExits
 
 [h1]Change Log[/h1]
+
+[h2]1.2.0[/h2]
+[list]
+[*]MCM Integration.
+[/list]
 
 [h2]1.1.0[/h2]
 [list]

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CameraToExits.Mcm;
 using MGSC;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -11,7 +12,7 @@ using UnityEngine;
 
 namespace CameraToExits
 {
-    public class ModConfig
+    public class ModConfig : IMcmConfigTarget
     {
 
         /// <summary>
@@ -31,16 +32,17 @@ namespace CameraToExits
         public KeyCode MoveToUpElevatorKey { get; set; } = KeyCode.RightBracket;
 
 
+        private static JsonSerializerSettings SerializerSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented,
+        };
+
+
         public static ModConfig LoadConfig(string configPath)
         {
             ModConfig config;
 
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented,
-            };
-
-            serializerSettings.Converters.Add(new StringEnumConverter()
+            SerializerSettings.Converters.Add(new StringEnumConverter()
             {
                 AllowIntegerValues = true,
             });
@@ -51,10 +53,10 @@ namespace CameraToExits
                 {
                     string sourceJson = File.ReadAllText(configPath);
 
-                    config = JsonConvert.DeserializeObject<ModConfig>(sourceJson, serializerSettings);
+                    config = JsonConvert.DeserializeObject<ModConfig>(sourceJson, SerializerSettings);
 
                     //Add any new elements that have been added since the last mod version the user had.
-                    string upgradeConfig = JsonConvert.SerializeObject(config, serializerSettings);
+                    string upgradeConfig = JsonConvert.SerializeObject(config, SerializerSettings);
 
                     if (upgradeConfig != sourceJson)
                     {
@@ -68,8 +70,7 @@ namespace CameraToExits
                 }
                 catch (Exception ex)
                 {
-                    Plugin.Logger.LogError("Error parsing configuration.  Ignoring config file and using defaults");
-                    Plugin.Logger.LogException(ex);
+                    Plugin.Logger.LogError(ex,"Error parsing configuration.  Ignoring config file and using defaults");
 
                     //Not overwriting in case the user just made a typo.
                     config = new ModConfig();
@@ -79,14 +80,15 @@ namespace CameraToExits
             else
             {
                 config = new ModConfig();
-                
-                string json = JsonConvert.SerializeObject(config, serializerSettings);
-                File.WriteAllText(configPath, json);
-
+                config.Save();
                 return config;
             }
+        }
 
-
+        public void Save()
+        {
+            string json = JsonConvert.SerializeObject(this, SerializerSettings);
+            File.WriteAllText(Plugin.ConfigDirectories.ConfigPath, json);
         }
     }
 }

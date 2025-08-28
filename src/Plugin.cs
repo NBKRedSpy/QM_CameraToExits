@@ -1,4 +1,5 @@
-﻿using MGSC;
+﻿using CameraToExits.Mcm;
+using MGSC;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,9 @@ namespace CameraToExits
 
         public static CameraExitService CameraExitService { get; private set; } = new CameraExitService();
 
+        private static McmConfiguration McmConfiguration;
+
+
         [Hook(ModHookType.AfterConfigsLoaded)]
         public static void AfterConfig(IModContext context)
         {
@@ -28,6 +32,10 @@ namespace CameraToExits
             Directory.CreateDirectory(ConfigDirectories.ModPersistenceFolder);
 
             Config = ModConfig.LoadConfig(ConfigDirectories.ConfigPath);
+
+            McmConfiguration = new McmConfiguration(Config, Plugin.Logger);
+            McmConfiguration.TryConfigure();
+
         }
 
         [Hook(ModHookType.DungeonUpdateAfterGameLoop)]

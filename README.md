@@ -12,6 +12,8 @@ The hotkeys can be configured.
 
 # Configuration
 
+This mod includes MCM configuration.  Some values can be edited in the Mods screen, while the rest will be display only. All options can be configured in the config file.
+
 The configuration file will be created on the first game run and can be found at `%AppData%\..\LocalLow\Magnum Scriptum Ltd\Quasimorph_ModConfigs\CameraToExits\config.json`.
 
 |Name|Default|Description|
@@ -29,10 +31,16 @@ Use "None" to not bind the key.
 If you enjoy my mods and want to buy me a coffee, check out my [Ko-Fi](https://ko-fi.com/nbkredspy71915) page.
 Thanks!
 
+# Credits
+* Special thanks to Crynano for his excellent Mod Configuration Menu. 
+
 # Source Code
 Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToExits
 
 # Change Log
+
+## 1.2.0
+* MCM Integration.
 
 ## 1.1.0 
 * Added drop pod to the list of items.  The user can press the "down key" again to cycle between the exist and the drop pod.  Intentionally includes if the area is not explored since it is shown on the minimap.
