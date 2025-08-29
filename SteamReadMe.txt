@@ -71,6 +71,11 @@ Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToEx
 
 [h1]Change Log[/h1]
 
+[h2]1.2.1[/h2]
+[list]
+[*]Fix for MCM not being bypassed due to Mono specific bug.
+[/list]
+
 [h2]1.2.0[/h2]
 [list]
 [*]MCM Integration.

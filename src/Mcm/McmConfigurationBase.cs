@@ -7,6 +7,7 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,24 +24,44 @@ namespace CameraToExits.Mcm
     /// <summary>
     /// The MCM configuration base class which provides methods to work with ConfigValues.
     /// </summary>
-    /// <param name="config"></param>
-    internal abstract class McmConfigurationBase<TConfig>(TConfig config, Logger logger) where TConfig : IMcmConfigTarget, new()
+    /// <remarks>See note in code.  This cannot be a generic class.  Mono has a bug with using reflection with generic types 
+    /// that have dependencies on assemblies that are not loaded.  This is Mono specific, not .NET</remarks>
+    internal abstract class McmConfigurationBase
     {
-        public Logger Logger { get; set; } = logger;
+        //Note - due to a bug with Mono, this class cannot be a generic.  The game uses the assembly to search for types
+        //  and Mono will create a VTable setup issue if a used type cannot be located.  This seems to only affect
+        //  classes with generics.  Since MCM is optional and the assembly may not be present, all ConfigValue items
+        //  will cause the issue.
 
-        public TConfig Config { get; set; } = config;
+        public Logger Logger { get; set; }
+
+        public IMcmConfigTarget Config { get; set; }
+
+        /// <summary>
+        /// Cache for the type of config.  Used for reflection
+        /// </summary>
+        private Type ConfigType { get; set; }
 
         /// <summary>
         /// The defaults for the config.  It is expected that any defaults are set on 
-        /// TConfig's construction
+        /// IMcmConfigTarget's construction
         /// </summary>
-        private TConfig Defaults { get; set; } = new TConfig();
+        private IMcmConfigTarget Defaults { get; set; }
 
         /// <summary>
         /// Used to make the keys for read only entries unique.  This prevents the MCM's dictionary
         /// from colliding due to entries that are simply notes or read only.
         /// </summary>
         private static int UniqueId = 0;
+        /// <param name="config">The object to read and write the settings to.  This must have a new() signature.</param>
+        /// <param name="logger">Used to log entries.</param>
+        public McmConfigurationBase(IMcmConfigTarget config, Logger logger)
+        {
+            Logger = logger;
+            Config = config;
+            ConfigType = config.GetType();
+            Defaults = (IMcmConfigTarget)Activator.CreateInstance(ConfigType);    
+        }
 
         /// <summary>
         /// Attempts to configure the MCM, but logs an error and continues if it fails.
@@ -88,14 +109,12 @@ namespace CameraToExits.Mcm
         {
             int key = UniqueId++;
 
-
-
-            object value = AccessTools.Property(typeof(TConfig), propertyName)?.GetValue(Config);
+            object value = AccessTools.Property(ConfigType, propertyName)?.GetValue(Config);
 
             if(value == null)
             {
                 //Try field
-                value = AccessTools.Field(typeof(TConfig), propertyName)?.GetValue(Config);
+                value = AccessTools.Field(ConfigType, propertyName)?.GetValue(Config);
             }
 
             string formattedValue;
@@ -140,21 +159,35 @@ namespace CameraToExits.Mcm
             return formattedPropertyName;
         }
 
+        /// <summary>
+        /// Creates a numeric config entry. Limited to MCM's support of int and float.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyName"></param>
+        /// <param name="tooltip"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="label">If not set, will use the property name, adding spaced before each capital letter.</param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         protected ConfigValue CreateConfigProperty<T>(string propertyName,
-            string tooltip, string label, T min, T max, string header = "General") where T: struct
+            string tooltip, T min, T max, string label = "", string header = "General") where T: struct
         {
-            T defaultValue = (T)AccessTools.Property(typeof(TConfig), propertyName).GetValue(Defaults);
-            T propertyValue = (T)AccessTools.Property(typeof(TConfig), propertyName).GetValue(Config);
+            object defaultValue = AccessTools.Property(ConfigType, propertyName).GetValue(Defaults);
+            object propertyValue = AccessTools.Property(ConfigType, propertyName).GetValue(Config);
+
+            string formattedLabel = label == "" ? FormatUpperCaseSpaces(propertyName) : label;
 
             switch (typeof(T))
             {
                 case Type floatType when floatType == typeof(float):
 
                     return new ConfigValue(propertyName, propertyValue, header, defaultValue, 
-                        tooltip, label, Convert.ToSingle(min), Convert.ToSingle(max));
+                        tooltip, formattedLabel, Convert.ToSingle(min), Convert.ToSingle(max));
                 case Type intType when intType == typeof(int):
                     return new ConfigValue(propertyName, propertyValue, header, defaultValue,
-                        tooltip, label, Convert.ToInt32(min), Convert.ToInt32(max));
+                        tooltip, formattedLabel, Convert.ToInt32(min), Convert.ToInt32(max));
                 default:
                     throw new ApplicationException($"Unexpected numeric type '{typeof(T).Name}'");
             }
@@ -171,8 +204,8 @@ namespace CameraToExits.Mcm
         protected ConfigValue CreateConfigProperty(string propertyName,
             string tooltip, string label = "", string header = "General")
         {
-            object defaultValue = AccessTools.Property(typeof(TConfig), propertyName).GetValue(Defaults);
-            object propertyValue = AccessTools.Property(typeof(TConfig), propertyName).GetValue(Config);
+            object defaultValue = AccessTools.Property(ConfigType, propertyName).GetValue(Defaults);
+            object propertyValue = AccessTools.Property(ConfigType, propertyName).GetValue(Config);
 
             string formattedLabel = label == "" ? FormatUpperCaseSpaces(propertyName) : label;
 
@@ -187,7 +220,7 @@ namespace CameraToExits.Mcm
         /// <param name="value"></param>
         protected bool SetPropertyValue(string key, object value)
         {
-            MethodInfo propertyMethod = AccessTools.Property(typeof(TConfig), key)?.GetSetMethod();
+            MethodInfo propertyMethod = AccessTools.Property(typeof(IMcmConfigTarget), key)?.GetSetMethod();
 
 
             //Try property
@@ -202,7 +235,7 @@ namespace CameraToExits.Mcm
             {
                 //Try field
 
-                var field = AccessTools.Field(typeof(TConfig), key);
+                var field = AccessTools.Field(typeof(IMcmConfigTarget), key);
                 if(field == null)
                 {
                     return false;
@@ -216,11 +249,11 @@ namespace CameraToExits.Mcm
             return false;
         }
 
-        protected virtual bool OnSave(Dictionary<string, object> currentConfig, out string feedbackMessage)
+        protected virtual bool OnSave(Dictionary<string, object> currenIMcmConfigTarget, out string feedbackMessage)
         {
             feedbackMessage = "";
 
-            foreach (var entry in currentConfig)
+            foreach (var entry in currenIMcmConfigTarget)
             {
                 SetPropertyValue(entry.Key, entry.Value);
             }
