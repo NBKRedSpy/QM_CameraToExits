@@ -41,6 +41,8 @@ namespace CameraToExits
         [Hook(ModHookType.DungeonUpdateAfterGameLoop)]
         public static void DungeonUpdateAfterGameLoop(IModContext context)
         {
+            if (UI.IsAnyShowing(typeof(DungeonHudScreen))) return;
+
             if (InputHelper.GetKeyDown(Config.MoveToDownElevatorKey))
             {
                 CameraExitService.MoveCameraToDown(context.State);
