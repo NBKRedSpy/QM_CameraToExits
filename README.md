@@ -39,7 +39,7 @@ Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToEx
 
 # Change Log
 
-## !.2.2
+## 1.2.2
 Fix: Now only activates if no window is shown.
 
 ## 1.2.1
