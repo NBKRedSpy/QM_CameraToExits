@@ -1,4 +1,5 @@
 ﻿using CameraToExits.Mcm;
+using CameraToExits_Bootstrap;
 using MGSC;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using UnityEngine;
 
 namespace CameraToExits
 {
-    public static class Plugin
+    public class Plugin : BootstrapMod
     {
 
         public static ConfigDirectories ConfigDirectories = new ConfigDirectories();
@@ -24,8 +25,13 @@ namespace CameraToExits
 
         private static McmConfiguration McmConfiguration;
 
+        public Plugin(HookEvents hookEvents, bool isBeta) : base(hookEvents, isBeta)
+        {
+            hookEvents.AfterConfigsLoaded += AfterConfig;
+        }
 
-        [Hook(ModHookType.AfterConfigsLoaded)]
+
+        //[Hook(ModHookType.AfterConfigsLoaded)]
         public static void AfterConfig(IModContext context)
         {
 
