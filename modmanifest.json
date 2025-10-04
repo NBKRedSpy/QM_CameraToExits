@@ -1,0 +1,9 @@
+{
+  "UniqueModName": "NBKRedSpy_MoreCombatInfo",
+  "Assemblies": [
+    "CameraToExits_Bootstrap.dll"
+  ],
+  "Dependencies": [],
+  "SteamTags": [
+  ]
+}
