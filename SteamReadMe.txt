@@ -71,6 +71,11 @@ Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToEx
 
 [h1]Change Log[/h1]
 
+[h2]1.3.1[/h2]
+[list]
+[*]0.9.8 Compatibility.
+[/list]
+
 [h2]1.3.0[/h2]
 [list]
 [*]Beta compatibility.
