@@ -28,13 +28,11 @@ namespace CameraToExits
         public Plugin(HookEvents hookEvents, bool isBeta) : base(hookEvents, isBeta)
         {
             hookEvents.AfterConfigsLoaded += AfterConfig;
+            hookEvents.DungeonUpdateAfterGameLoop += DungeonUpdateAfterGameLoop;
         }
 
-
-        //[Hook(ModHookType.AfterConfigsLoaded)]
         public static void AfterConfig(IModContext context)
         {
-
             Directory.CreateDirectory(ConfigDirectories.ModPersistenceFolder);
 
             Config = ModConfig.LoadConfig(ConfigDirectories.ConfigPath);
@@ -44,7 +42,6 @@ namespace CameraToExits
 
         }
 
-        [Hook(ModHookType.DungeonUpdateAfterGameLoop)]
         public static void DungeonUpdateAfterGameLoop(IModContext context)
         {
             if (UI.IsAnyShowing(typeof(DungeonHudScreen))) return;

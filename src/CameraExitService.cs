@@ -126,7 +126,7 @@ namespace CameraToExits
 
         private bool IsExplored(MapObstacle obstacle)
         {
-            return (obstacle._mapGrid.GetCell(obstacle.Position).isExplored);
+            return (obstacle._mapGrid.GetCell(obstacle.Position).IsExplored);
         }
 
         /// <summary>
