@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MGSC;
+using Newtonsoft.Json;
+using PityUnlock_Bootstrap;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,8 +10,6 @@ using System.Runtime;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using MGSC;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace CameraToExits_Bootstrap
@@ -29,30 +30,10 @@ namespace CameraToExits_Bootstrap
 
                 string modPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                BetaConfig config = JsonConvert.DeserializeObject<BetaConfig>(File.ReadAllText(Path.Combine(modPath, "version-info.json")));
-                bool isBeta = GetNumericVersion(Application.version) >= GetNumericVersion(config.BetaVersion);
+                bool isBeta;
+                if (VersionCheck.DisableModCheck(modPath, out isBeta)) return;
 
-                if (isBeta)
-                {
-                    Log.LogWarning("Beta version detected.");
-                    if (config.DisableBeta)
-                    {
-                        Log.LogError("Beta version is disabled.  Mod is disabled.");
-                        return;
-                    }
-                }
-                else
-                {
-                    if (config.DisableStable)
-                    {
-                        Log.LogError("Stable version is disabled.  Mod is disabled.");
-                        return;
-                    }
-                }
-
-
-                string modDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                Assembly modAssembly = Assembly.LoadFile(Path.Combine(modDir, isBeta ? "beta" : "stable", "CameraToExits.dll"));
+                Assembly modAssembly = Assembly.LoadFile(Path.Combine(modPath, isBeta ? "beta" : "stable", "CameraToExits.dll"));
 
                 //Using reflection to prevent cyclic dependency
                 Type bootstrapModType = modAssembly.GetTypes().Where(x => x.IsSubclassOf(typeof(BootstrapMod))).FirstOrDefault();
