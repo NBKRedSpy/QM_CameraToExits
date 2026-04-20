@@ -38,6 +38,10 @@ Thanks!
 Source code is available on GitHub at https://github.com/NBKRedSpy/QM_CameraToExits
 
 # Change Log
+
+## 1.3.2
+* UNSTABLE BETA.501 compatibility 
+
 ## 1.3.1 
 * 0.9.8 Compatibility.
 
